@@ -1,0 +1,571 @@
+/*
+* Skeleton V1.2
+* Copyright 2011, Dave Gamache
+* www.getskeleton.com
+* Free to use under the MIT license.
+* http://www.opensource.org/licenses/mit-license.php
+* 6/20/2012
+*/
+
+/* Table of Content
+==================================================
+    #Site Styles
+    #Page Styles
+    #Media Queries
+    #Font-Face */
+
+/* #Site Styles
+================================================== */
+
+/* #Page Styles
+================================================== */
+
+.festHeader {
+    margin-top: 20px;
+    font-size: 2em;
+    text-align: right;
+}
+
+.band {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    width:100%;
+    height:3.5em;
+    margin:10px;
+    background:blue;
+    opacity: 0.9;
+    /*background-image:url(http://lorempixel.com/g/300/300/nightlife);*/
+            -webkit-transition: all 0.25s linear;
+       -moz-transition: all 0.25s linear;
+        -ms-transition: all 0.25s linear;
+         -o-transition: all 0.25s linear;
+            transition: all 0.25s linear;
+                z-index:-1001;
+
+}
+
+.bandblock{
+    float: none;
+    background:black;
+    opacity: 0.8;
+    width:100%;
+    height: 100%;
+    display:block;
+    position:relative;
+    color:white;
+    z-index:-1000;
+    margin-bottom: 1% !important;
+
+}
+.bandblock:hover + .genre{
+    display:block;
+}
+
+.bandname {
+    margin-left: 10px;
+    font-size: 1.25em;
+    padding-left: 10px;
+    display: block;
+    position: relative;
+    top: 10%;
+}
+
+.genre {
+    display:block;
+    text-align: right;
+    padding-right: 10px;
+    font-size: .9em;
+    padding-left: 10px;
+}
+.band:hover + .genre{
+    display:block;
+}
+
+.band a:link {
+    color:white;
+     font-size: .85em;
+}
+.band a:visited {
+    color:white;
+    font-size: .85em;
+}
+.band a:hover {
+    color: #CCFFFF;
+}
+
+.close, .close:focus, .close:active, a.class {
+    position: absolute;
+    right:0;
+    top: 0;
+    margin-top:3px;
+    margin-right:10px;
+    font-size: .85em;
+    color: #2A56A5;
+    background:none!important;
+    border:none; 
+    padding:0!important;
+    outline:none;
+    outline-offset:0;
+    font:inherit;
+    text-decoration: none;
+    cursor:pointer;
+}
+
+.close::-moz-focus-inner {
+    padding:0;
+    border:0;
+}
+
+
+.wrong, .wrong:focus, .wrong:active, a.class {
+    position: absolute;
+    right:0;
+    bottom: 0;
+    margin-top:3px;
+    margin-right:10px;
+    font-size: .85em;
+    color: #2A56A5;
+    background:none!important;
+    border:none; 
+    padding:0!important;
+    outline:none;
+    outline-offset:0;
+    font:inherit;
+    text-decoration: none;
+    cursor:pointer;
+}
+
+.wrong::-moz-focus-inner {
+    padding:0;
+    border:0;
+}
+
+.spotifyUri {
+    color: white;
+    display: block;
+    float: left;
+    margin-right: 2em;
+    font-size: 1.25em;
+}
+
+.spotifyUri a:link {
+    color: white;
+}
+
+.spotifyUri a:hover {
+    color: #F02A2A;
+}
+
+.bc_url {
+    color: white;
+    display: block;
+    float: left;
+    margin-right: 2em;
+    font-size: 1.25em;
+}
+
+.bc_url a:link {
+    color: white;
+}
+
+.bc_url a:hover {
+    color: #F02A2A;
+}
+
+.bc_offsite {
+    color: white;
+    display: block;
+    float: left;
+    margin-right: 2em;
+    font-size: 1.25em;
+}
+
+.bc_offsite a:link {
+    color: white;
+}
+
+.bc_offsite a:hover {
+    color: #F02A2A;
+}
+
+.ytTitle {
+    display: block;
+    text-align: center;
+    float: left;
+    margin-right: 2em;
+    font-size: 1em;
+}
+
+.ytEmbed {
+    display: block;
+    margin-right: 2em;
+    position:relative;
+    width:40px;
+    height:25px;
+    overflow:hidden;
+}
+.ytEmbedOne {
+    position:absolute;
+    top:-276px;
+    left:-5px
+}
+
+.slideout {
+    height: 10em;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+.slided {
+    width:90%;
+    margin-left: 1%;
+    margin-top:1%;
+    padding-top: 1em;
+    padding-left: 1em;
+}
+
+.login, .logout {
+    position:absolute;
+    top: 0;
+    right: 0;
+    font-size: .85em;
+    margin-top: 2px;
+    margin-right: 4em;
+}
+
+.letterselectors {
+    font-size: 1.1em;
+}
+
+.topnav {
+    position: fixed;
+    background-color: white;
+    opacity: .5;
+    z-index: 100000000;
+    width: 100%;
+
+}
+
+.authLinks {
+    margin-top: 1px;
+    margin-right: 1px;
+}
+
+@media only screen and (max-width: 767px) {
+    .bc_url a:link {
+        color: white;
+        font-size: .8em;
+    }
+    .bc_url {
+        font-size: .8em;   
+    }
+
+.bc_offsite {
+    color: white;
+    display: block;
+    float: left;
+    margin-right: 2em;
+    font-size: .8em;
+}
+
+    .bc_url a:hover {
+        color: #F02A2A;
+    }
+
+    .spotifyUri {
+        color: white;
+        display: block;
+        float: left;
+        margin-right: 2em;
+        font-size: .85em;
+    }
+    .ytTitle {
+        display: block;
+        text-align: center;
+        float: left;
+        margin-right: 2em;
+        font-size: .7em;
+    }
+}
+/* Dropdown thing
+-----------------
+-----------------
+*/
+.alphadropdown {
+    margin-left: 1em;
+    width: 110px;
+}
+
+.alphadropdown--large {
+    width: 110px;
+    font-size: .75em;
+}
+
+.alphadropdown--small {
+    width: 110px;
+    font-size: .7em;
+}
+
+.alphadropdown__select{
+    font-size: .85em; /* inherit size from .alphadropdown */
+    padding: ; /* add some space*/
+    margin: 0; /* remove default margins */
+}
+
+.alphadropdown__select--white {
+    background-color: #fff;
+    color: #444;    
+}
+
+@supports (pointer-events: none) and
+      ((-webkit-appearance: none) or
+      (-moz-appearance: none) or
+      (appearance: none)) {
+
+    .alphadropdown {
+        position: relative;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .alphadropdown__select {
+        padding-right: 2.5em; /* accommodate with the pseudo elements for the dropdown arrow */
+        border: 0;
+        border-radius: 3px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;    
+    }
+
+    .alphadropdown::before,
+    .alphadropdown::after {
+        content: "";
+        position: absolute;
+        pointer-events: none;
+    }
+
+    .alphadropdown::after { /*  Custom dropdown arrow */
+        content: "\25BC";
+        height: 1em;
+        font-size: .625em;
+        line-height: 1;
+        right: 1.2em;
+        top: 50%; margin-top: -.5em;
+    }
+
+    .alphadropdown::before { /*  Custom dropdown arrow cover */
+        width: 2em;
+        right: 0; top: 0; bottom: 0;
+        border-radius: 0 3px 3px 0;
+    }
+
+    .alphadropdown__select[disabled] {
+        color: rgba(0,0,0,.3);
+    }
+
+    .alphadropdown.alphadropdown--disabled::after {
+        color: rgba(0,0,0,.1);
+    }
+
+    /* White dropdown style */
+    .alphadropdown--white::before {
+        top: .5em; bottom: .5em;
+        background-color: #fff;
+        border-left: 1px solid rgba(0,0,0,.1);
+    }
+
+    .alphadropdown--white::after {
+        color: rgba(0,0,0,.9);
+    }
+
+    /* FF only temp fix */
+    @-moz-document url-prefix() {
+        .alphadropdown__select             { padding-right: .9em }
+        .alphadropdown--large .alphadropdown__select { padding-right: 1.3em }
+        .alphadropdown--small .alphadropdown__select { padding-right: .5em }
+    }
+}
+
+/* Dropdown thing
+*/
+.genredropdown {
+    margin-left: 1em;
+    width: 140px;
+}
+
+.genredropdown--large {
+    width: 140px;
+    font-size: .75em;
+}
+
+.genredropdown--small {
+    width: 140px;
+    font-size: .7em;
+}
+
+.genredropdown__select{
+    font-size: .85em; /* inherit size from .genredropdown */
+    padding: ; /* add some space*/
+    margin: 0; /* remove default margins */
+}
+
+.genredropdown__select--white {
+    background-color: #fff;
+    color: #444;    
+}
+
+@supports (pointer-events: none) and
+      ((-webkit-appearance: none) or
+      (-moz-appearance: none) or
+      (appearance: none)) {
+
+    .genredropdown {
+        position: relative;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .genredropdown__select {
+        padding-right: 2.5em; /* accommodate with the pseudo elements for the dropdown arrow */
+        border: 0;
+        border-radius: 3px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;    
+    }
+
+    .genredropdown::before,
+    .genredropdown::after {
+        content: "";
+        position: absolute;
+        pointer-events: none;
+    }
+
+    .genredropdown::after { /*  Custom dropdown arrow */
+        content: "\25BC";
+        height: 1em;
+        font-size: .625em;
+        line-height: 1;
+        right: 1.2em;
+        top: 50%; margin-top: -.5em;
+    }
+
+    .genredropdown::before { /*  Custom dropdown arrow cover */
+        width: 2em;
+        right: 0; top: 0; bottom: 0;
+        border-radius: 0 3px 3px 0;
+    }
+
+    .genredropdown__select[disabled] {
+        color: rgba(0,0,0,.3);
+    }
+
+    .genredropdown.genredropdown--disabled::after {
+        color: rgba(0,0,0,.1);
+    }
+
+    /* White dropdown style */
+    .genredropdown--white::before {
+        top: .5em; bottom: .5em;
+        background-color: #fff;
+        border-left: 1px solid rgba(0,0,0,.1);
+    }
+
+    .genredropdown--white::after {
+        color: rgba(0,0,0,.9);
+    }
+
+    /* FF only temp fix */
+    @-moz-document url-prefix() {
+        .genredropdown__select             { padding-right: .9em }
+        .genredropdown--large .genredropdown__select { padding-right: 1.3em }
+        .genredropdown--small .genredropdown__select { padding-right: .5em }
+    }
+}
+
+
+/*wrong stuff*/
+#wrong_popup {
+    width: 50%;
+    height: 50%;
+    background-color: white;
+    display: block;
+    position: fixed;
+    top: 20%;
+    left: 25%;
+    border: 1px solid #333333;
+    text-align: center;
+}
+
+.wrongBand {
+    font-size: 1.2em;
+}
+
+#wrong_select {
+    margin: 0 auto;
+}
+
+#wrong_suggestion {
+    margin: 0 auto;
+}
+
+/* #Media Queries
+================================================== */
+
+    /* Smaller than standard 960 (devices and browsers) */
+    @media only screen and (max-width: 959px) {
+        #wrong_popup {
+            width:90%;
+            left:5%;
+        }
+        .wrong, .wrong:focus, .wrong:active, a.class {
+            position: absolute;
+            right:0;
+            bottom: 0;
+            margin-top:3px;
+            margin-right:10px;
+            font-size: .85em;
+            color: #2A56A5;
+            background:none!important;
+            border:none; 
+            padding:0!important;
+            outline:none;
+            outline-offset:0;
+            font:inherit;
+            text-decoration: none;
+            cursor:pointer;
+        }
+    }
+
+    /* Tablet Portrait size to standard 960 (devices and browsers) */
+    @media only screen and (min-width: 768px) and (max-width: 959px) {}
+
+    /* All Mobile Sizes (devices and browser) */
+    @media only screen and (max-width: 767px) {}
+
+    /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
+    @media only screen and (min-width: 480px) and (max-width: 767px) {}
+
+    /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
+    @media only screen and (max-width: 479px) {}
+
+
+/* #Font-Face
+================================================== */
+/*  This is the proper syntax for an @font-face file
+        Just create a "fonts" folder at the root,
+        copy your FontName into code below and remove
+        comment brackets */
+
+/*  @font-face {
+        font-family: 'FontName';
+        src: url('../fonts/FontName.eot');
+        src: url('../fonts/FontName.eot?iefix') format('eot'),
+             url('../fonts/FontName.woff') format('woff'),
+             url('../fonts/FontName.ttf') format('truetype'),
+             url('../fonts/FontName.svg#webfontZam02nTh') format('svg');
+        font-weight: normal;
+        font-style: normal; }
+*/
+
