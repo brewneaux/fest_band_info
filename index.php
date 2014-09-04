@@ -6,7 +6,6 @@ require 'includes/Mobile_Detect.php';
 $mobileDetector = new Mobile_Detect;
 $isMobile = $mobileDetector->isMobile() || $mobileDetector->isTablet();
 
-$dbo = new User();
 $testauthid = $Auth->id;
 
 
@@ -140,7 +139,7 @@ else {
 
 	<div class="container">
 		<div class="sixteen columns">
-			<div class="remove-bottom festHeader" class="" >Fest 13: All yr band needs <?php echo $testauthid; ?> </div>
+			<div class="remove-bottom festHeader" class="" >Fest 13: All yr band needs</div>
 
 
 		</div>
