@@ -21,7 +21,7 @@
 ================================================== */
 
 .festHeader {
-    margin-top: 20px;
+    margin-top: 2em;
     font-size: 2em;
     text-align: right;
 }
@@ -195,6 +195,14 @@
     font-size: 1em;
 }
 
+.ytTitleMobile {
+    display: block;
+    text-align: center;
+    float: left;
+    margin-right: 2em;
+    font-size: 1em;
+}
+
 .ytEmbed {
     display: block;
     margin-right: 2em;
@@ -241,7 +249,7 @@
 .topnav {
     position: fixed;
     background-color: white;
-    opacity: .5;
+    opacity: .7;
     z-index: 100000000;
     width: 100%;
 
@@ -515,6 +523,17 @@
 
     /* Smaller than standard 960 (devices and browsers) */
     @media only screen and (max-width: 959px) {
+        .festHeader {
+            margin-top: 3em;
+            font-size: 1.25em;
+        }
+
+        .login, .logout {
+            position: relative;
+            float:right;
+            margin-right: 1em;
+        }
+
         #wrong_popup {
             width:90%;
             left:5%;

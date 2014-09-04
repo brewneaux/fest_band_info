@@ -8,9 +8,6 @@
             parent::__construct('users', array('nid', 'username', 'password', 'level'), $id);
         }
 
-        public function someFunc(){
-
-        }
     }
 
     class festInfo extends DBObject
@@ -45,5 +42,7 @@
             $genre_dropdown .= '</select>';
             return $genre_dropdown;
         }
+
     }
+
 

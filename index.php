@@ -1,6 +1,15 @@
 <?php
 require 'includes/master.inc.php';
 require 'includes/connect.php';
+require 'includes/Mobile_Detect.php';
+
+$mobileDetector = new Mobile_Detect;
+$isMobile = $mobileDetector->isMobile() || $mobileDetector->isTablet();
+
+$dbo = new User();
+$testauthid = $Auth->id;
+
+
 
 // This is for the infinite scroll
 $page = (int) (!isset($_GET['p'])) ? 1 : $_GET['p'];
@@ -82,11 +91,21 @@ $genres = $festInfo->genreBuilder();
 
  	
 <?php 
-if ($li == 1){
-	echo '<script type="text/javascript" src="js/liscripts.js"></script>';
+if($isMobile) {
+	if ($li == 1){
+		echo '<script type="text/javascript" src="js/mobile_liscripts.js"></script>';
+		}
+	else {
+		echo '<script type="text/javascript" src="js/mobile_nliscripts.js"></script>';
 	}
+}
 else {
-	echo '<script type="text/javascript" src="js/nliscripts.js"></script>';
+	if ($li == 1){
+		echo '<script type="text/javascript" src="js/liscripts.js"></script>';
+		}
+	else {
+		echo '<script type="text/javascript" src="js/nliscripts.js"></script>';
+	}
 }
 ?>
     <script type="text/javascript">
@@ -121,7 +140,7 @@ else {
 
 	<div class="container">
 		<div class="sixteen columns">
-			<div class="remove-bottom festHeader" class="" style="margin-top: 40px">Fest 13: All yr band needs</div>
+			<div class="remove-bottom festHeader" class="" >Fest 13: All yr band needs <?php echo $testauthid; ?> </div>
 
 
 		</div>

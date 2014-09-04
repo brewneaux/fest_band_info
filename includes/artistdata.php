@@ -16,6 +16,12 @@ elseif ($_GET['action'] == "wrongData") {
 	$suggestion = $_POST['suggestion'];
 	wrongData($dbi,$artistid,$element,$suggestion);
 }
+elseif ($_GET['action'] == "setStars") {
+	$userId = $_POST['userid'];
+	$artistId = $_POST['artistid'];
+	$rating = $_POST['rating'];
+	setStars($dbi,$userId,$artistId,$rating);
+}
 else {
 	header('HTTP/1.1 400 Bad Request');
 }
@@ -65,5 +71,29 @@ function wrongData($dbi, $artistid,$element,$suggestion) {
 	}
 }
 
+function setStars($dbi, $userId, $artistId, $rating) {
+	if(	!ctype_digit($userId) 
+		&& !ctype_digit($artistId) 
+		&& ctype_digit($rating) 
+		&& $rating < 0 
+		&& $rating > 100)  {
+
+		$query = "INSERT INTO fest_artist_rating (user, artist, rating) VALUES ('$userId', '$artistId', '$rating')";
+
+		if ($dbi->query($query)) {
+			return true;
+		}
+		else {
+			header('HTTP/1.1 400 Bad Request - DB');
+			exit;
+		}
+
+	}
+	else {
+		header('HTTP/1.1 400 Bad Request - values');
+		exit;
+	}
+
+}
 
 ?>
