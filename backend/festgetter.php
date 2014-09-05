@@ -41,7 +41,7 @@ CREATE TABLE `fest_info` (
 ) ENGINE=MyISAM;
 
 */
-
+echo "reading config\n";
 try {
 	$config_file = 'config.ini';
 	$config = parse_ini_file($config_file, true);
@@ -56,7 +56,7 @@ catch (Exception $e) {
 	echo $e;
 	exit;
 }
-
+echo "config read. conneting to db \n";
 
 
 // *******
@@ -70,10 +70,11 @@ if (mysqli_connect_errno()) {
 }
 
 if (!$dbh->query("DROP TABLE IF EXISTS fest_info_temp") ||
-    !$dbh->query("CREATE TABLE fest_info_temp LIKE fest_info")) {
+    !$dbh->query("CREATE TABLE fest_info_temp LIKE fest_info_working_1")) {
     echo "Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error;
 }
 
+echo "db connected, table created \n";
 // *******
 // Go get the data from the API
 // *******
@@ -99,31 +100,155 @@ do {
 } while ($kimono_length == 0 && $attempts > 0);
 $kimono_band_list = str_replace('"', '', $kimono_band_list);
 
-$kimono_band_list = iconv("UTF-8", "ISO-8859-1//TRANSLIT", $kimono_band_list);
+echo "got band list \n";
+$band_list = str_replace("é", "e",$band_list);
+$band_list = str_replace("’","'",$band_list);
+$kimono_band_list = iconv('utf-8', 'us-ascii//TRANSLIT//IGNORE', $kimono_band_list);
 
 // *******
 // If debug is on, lets just do a subset.
 // *******
 	
-	$band_list = str_replace("é","’",array("e","'"),$band_list);
+
 	$band_list = explode("\r\n", $kimono_band_list);
 	array_splice($band_list, 0, 2);
 	array_pop($band_list);
 	$band_list_length = count($band_list);
 	// $band_list = array_slice($band_list, 0, 25);
 
+// Now, we insert just the bands into the empty table, so we can see which we need to go get, or deactivate.
+echo $band_list_length;
+$query_string_1 = '';
+foreach ($band_list as $band) {
+	$band = $dbh->real_escape_string($band);
+	$query_string_1 .= "(\"$band\"),";
+}
+$query_string_1 = substr($query_string_1, 0, -1);
+
+// $band_list_comma = $dbh->real_escape_string($band_list_comma);
+$insert_all_query = "INSERT INTO fest_info_temp (band) VALUES $query_string_1";
+
+if ($dbh->query($insert_all_query) === TRUE) {
+    printf("Table filled\n");
+}
+else {
+	echo 'fail';
+	 printf("Errormessage: %s\n", $dbh->error);
+}
+
+$update_deactive_query = "UPDATE fest_info_working_1 a LEFT JOIN fest_info_temp b ON a.band = b.band SET a.genre = 'Dropped' where b.band is null";
+
+if ($dbh->query($update_deactive_query)) {
+	echo "Dropped $dbh->affected_rows bands\n";
+}
+else {
+	echo "Failed - $dbh->error";
+}
+
+
+$band_list_query = "SELECT band FROM fest_info_temp as t WHERE NOT EXISTS (SELECT TRUE FROM fest_info_working_1 as w where t.band = w.band)";
+
+$band_list_to_add = array();
+if ($band_list_result = $dbh->query($band_list_query)) {
+	/* fetch associative array */
+	while ($band_result = mysqli_fetch_row($band_list_result)) {
+	    array_push($band_list_to_add, $band_result[0]);
+	}
+	/* free result set */
+	mysqli_free_result($band_list_result);
+}
+print_r($band_list_to_add);
 
 // *******
 // If you can't figure out what these are from the name, stop now.
 // *******
 
-function lastfmTagsOne($band) {
+function DEPlastfmTagsOne($band) {
 	global $config;
 	$last_fm_genre_url = 'http://ws.audioscrobbler.com/2.0/?method=artist.getTopTags&artist=' . urlencode($band) .'&user=vonwhoopass&api_key=' . $config['lastfm_api'] . '&format=json';
 	$lastfmtags_response = json_decode(file_get_contents($last_fm_genre_url), true);
 	$genre = $lastfmtags_response['toptags']['tag'][0]['name'];
 	return $genre;
 }
+
+$possible_genres = array(
+	"melodic-hardcore",
+	"post-hardcore",
+	"pop-punk",
+	"emo",
+	"hardcore",
+	"screamo",
+	"punk",
+	"folk",
+	"indie",
+	"metal",
+	"acoustic"
+);
+
+function lastfmTagsOne($band) {
+	global $config;
+	$last_fm_genre_url = 'http://ws.audioscrobbler.com/2.0/?method=artist.getTopTags&artist=' . urlencode($band) .'&user=vonwhoopass&api_key=' . $config['lastfm_api'] . '&format=json';
+	$lastfmtags_response = json_decode(file_get_contents($last_fm_genre_url), true);
+	if (array_key_exists('toptags', $lastfmtags_response)) {
+		$lastfmtags_response = $lastfmtags_response['toptags'];
+	}
+	else {
+		return null;
+	}
+	if (array_key_exists('tag',$lastfmtags_response)) {
+		$lastfmtags_response_tags = $lastfmtags_response['tag'];
+
+		if (isset($lastfmtags_response_tags['0'])){
+			$possible_tags = array();
+
+			foreach ($lastfmtags_response_tags as $response_piece) {
+				array_push($possible_tags, str_replace(' ', '-', $response_piece['name']));
+			}
+		}
+		else {
+			$possible_tags = $lastfmtags_response_tags['name'];
+		}
+		
+		$chosen_genre = chooseGenre($possible_tags);
+		return $chosen_genre;
+	}
+}
+
+
+function chooseGenre($band_genre_array) {
+	global $possible_genres;
+
+	if (is_array($band_genre_array)) {
+		foreach ($band_genre_array as $band_genre) {	
+			if (str_word_count($band_genre, 0, 2) > 1){
+				if (str_word_count($band_genre, 1, 2)['1'] == 'rock') {
+					$band_genre = str_word_count($band_genre, 1, 2)['0'];
+				}
+				else {
+					str_replace(' ', '-', $band_genre);
+				}
+			}
+			if (in_array(strtolower($band_genre), $possible_genres)) {
+				return $band_genre;
+			}
+		}
+	}
+	else {
+		if (str_word_count($band_genre_array, 0, 2) > 1){
+			if (str_word_count($band_genre_array, 1, 2)['1'] == 'rock') {
+				$band_genre_array = str_word_count($band_genre_array, 1, 2)['0'];
+			}
+			else {
+				str_replace(' ', '-', $band_genre_array);
+			}	
+		}
+		if (in_array(strtolower($band_genre_array), $possible_genres)) {
+				return $band_genre_array;
+		}
+	}
+}
+
+
 
 function lastfmTopSong($band) {
 	global $config;
@@ -150,15 +275,15 @@ function spotifyArtist($band) {
 	$spotify_uri = $spotify_response['artists']['items'][0]['uri'];
 	$spotify_image_height = 1;
 	$spotify_image_url = "none";
-	// for ($i = count($spotify_response['artists']['items'][0]['images']); $i >= 0; $i--){
-	// 	if ($spotify_response['artists']['items'][0]['images'][$i]['height'] > 350 ) {
-	// 		$proper_image_element = $i;
-	// 		break;
-	// 	}
-	// }
+	for ($i = count($spotify_response['artists']['items'][0]['images']); $i >= 0; $i--){
+		if ($spotify_response['artists']['items'][0]['images'][$i]['height'] > 350 ) {
+			$proper_image_element = $i;
+			break;
+		}
+	}
 
-	// $spotify_image_url = $spotify_response['artists']['items'][0]['images'][$proper_image_element]['url'];
-	// $spotiy_image_height = $spotify_response['artists']['items'][0]['images'][$proper_image_element]['height'];
+	$spotify_image_url = $spotify_response['artists']['items'][0]['images'][$proper_image_element]['url'];
+	$spotiy_image_height = $spotify_response['artists']['items'][0]['images'][$proper_image_element]['height'];
 	return array($spotify_web_url, $spotify_uri, $spotify_image_url, $spotify_image_height);
 }
 
@@ -194,7 +319,7 @@ function youtubeSearch($band,$top_song) {
 
 $image_url_array = array();
 
-foreach ($band_list as $band) {	
+foreach ($band_list_to_add as $band) {	
 	global $dbh;
 	$last_fm_image_url = lastfmImage($band);
 	$genre = lastfmTagsOne($band);
@@ -223,10 +348,11 @@ foreach ($band_list as $band) {
 	$bandcamp_url     = $dbh->real_escape_string($bandcamp_url) ?: ' ';
 	$youtube_id       = $dbh->real_escape_string($youtube_id) ?: ' ';
 	$youtube_title    = $dbh->real_escape_string($youtube_title) ?: ' ';
+	$path_to_image 	  = str_replace(' ', '', $dbh->real_escape_string($band));
 
-	$insert = $dbh->prepare("INSERT INTO `fest_info_temp` VALUES (0,?,?,?,?,?,?,?,?,?,?,?,?)");
-
-	$insert->bind_param('ssssssssssss',$band,$genre,$top_song,$spotify_web,$spotify_uri,$spotify_image,$spotify_image_height,$last_fm_image_url,$bandcamp_offsite,$bandcamp_url,$youtube_id,$youtube_title);
+	$insert = $dbh->prepare("INSERT INTO `fest_info_temp` VALUES (0,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+	$dummy = '';
+	$insert->bind_param('sssssssssssss',$band,$genre,$dummy,$top_song,$spotify_web,$spotify_uri,$spotify_image,$spotify_image_height,$bandcamp_offsite,$bandcamp_url,$youtube_id,$youtube_title, $path_to_image);
 
 // eventually I"ll make the echo go away, but I'm still debugging.
 	if ($result = $insert->execute()){
@@ -242,56 +368,78 @@ foreach ($band_list as $band) {
 	else {
 		$image_url_array[$band] = $spotify_image;
 	}
+	echo "inserted $band \n";
 }
 
-// IDE's might yell about the way I'm getting the first element of the array 2 lines down.
-// It works, and this is a syntax holdover from Perl in my brain.
-$fest_info_temp_table_count = mysqli_query($dbh,"SELECT COUNT(*) FROM fest_info_temp;");
-$temp_count = mysqli_fetch_array($fest_info_temp_table_count)[0];
+echo "Done inserting\n";
 
-$real_table_count = mysqli_query($dbh,"SELECT COUNT(*) FROM fest_info;");
-$real_count = mysqli_fetch_array($real_table_count)[0];
+// Add the bands from the temp table to the real table
 
-// if ($real_count == 0) {
-// 	echo "realcount was 0";
-// 	if(!$dbh->query("DROP TABLE IF EXISTS fest_info") ||
-// 	!$dbh->query("RENAME TABLE fest_info_temp TO fest_info")){
-// 		echo "\nDrop and rename failed\n";
-// 	}
-// 	else {
-// 		echo "\nDropped fest_info, fest_info_temp was renamed\n";
-// 	}
-// }
-// elseif ($temp_count > $real_count) {
-// 	if (!$dbh->query(
-// 		"INSERT INTO fest_info
-// 			SELECT * FROM fest_info_temp AS temp
-// 			WHERE NOT EXISTS 
-// 			(
-// 				SELECT TRUE
-// 				FROM fest_info AS real
-// 				WHERE temp.band = real.band
-// 			);"
-// 		)
-// 	) {
-// 		echo "\nINSERT WHERE NOT EXIST FAILED.";
-// 	}
-// 	else {
-// 		printf("Affected rows (INSERT): %d\n", $dbh->affected_rows);
-// 	}
-// }
+$update_info_table_query = <<<EOQ
+INSERT INTO fest_info_working_1 
+(
+	band,
+	genre,
+	lastfm_genre,
+	lastfm_topsong,
+	spotify_web,
+	spotify_uri,
+	spotify_image,
+	height,
+	bandcamp_offsite,
+	bandcamp_url,
+	youtube_id,
+	youtube_title,
+	pathtoimage
+)
+SELECT
+	band,
+	genre,
+	lastfm_genre,
+	lastfm_topsong,
+	spotify_web,
+	spotify_uri,
+	spotify_image,
+	height,
+	bandcamp_offsite,
+	bandcamp_url,
+	youtube_id,
+	youtube_title,
+	pathtoimage
+FROM fest_info_temp
+WHERE pathtoimage IS NOT NULL 
+AND (band IS NOT NULL OR band != '')
+EOQ;
 
-// mysqli_close($dbh);
+if ($dbh->query($update_info_table_query) === TRUE) {
+    echo "successfully loaded new bands\n";
+}
+else {
+	echo "fail. $dbh->error";
+}
 
-// if ($argv[1] == 'firstrun') {
-// 	foreach ($image_url_array as $band => $image) {
-// 		if (!$image){
-// 			continue;
-// 		}
-// 		$filename = strtolower(str_replace(' ', '', $band));
-// 		file_put_contents("/home2/enim/public_html/fest13/php/img/{$filename}.jpg", file_get_contents($image));
-// 	}
-// }
+if ($image_url_array) {
+	foreach ($image_url_array as $band => $image) {
+		if (!$image){
+			continue;
+		}
+		$filename = strtolower(str_replace(' ', '', $band));
+		file_put_contents("../img/{$filename}.jpg", file_get_contents($image));
+
+	}
+}
+
+$img = new Imagick("../img/*.jpg");
+foreach($images as $image) {
+
+	$img->modulateImage(100, 0, 100);
+	$img->ThumbnailImage(300,180);
+}
+$img->writeImage();
+
+echo "finished images\n";
 
 
-// ?>
+
+
+?>

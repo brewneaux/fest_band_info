@@ -163,7 +163,7 @@ else {
 
 <?php if (isset($next)): ?>
 	<div class="nav">
-		<a href='index.php?p=<?php echo $next?>'>Next</a>
+		<a href='index.php?<?php if (isset($_GET['letter'])){echo 'letter=' . $_GET['letter'] . '&';} ?>p=<?php echo $next?>'>Next</a>
 	</div>
 	<?php endif?>
 	<div id="pagehider"></div>
