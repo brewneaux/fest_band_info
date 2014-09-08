@@ -46,7 +46,7 @@
 .bandblock{
     float: none;
     background:black;
-    opacity: 0.7;
+    opacity: 0.8;
     width:100%;
     height: 100%;
     display:block;
@@ -55,10 +55,35 @@
     z-index:-1000;
     margin-bottom: 1% !important;
 
+    -webkit-transition: all 0.25s linear;
+    -moz-transition: all 0.25s linear;
+    -ms-transition: all 0.25s linear;
+    -o-transition: all 0.25s linear;
+    transition: all 0.25s linear;
 }
 
-.bandblock:hover{
-    opacity: .8;
+.fa {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    position: absolute;
+    -moz-osx-font-smoothing: grayscale;
+    top: 10%;
+    left: 50%;
+    color: #83F3FD;
+    opacity: .1;
+        -webkit-transition: all 0.25s linear;
+    -moz-transition: all 0.25s linear;
+    -ms-transition: all 0.25s linear;
+    -o-transition: all 0.25s linear;
+    transition: all 0.25s linear;
+}
+
+.bandblock:hover .fa {
+    opacity: .5;
+    
 
     -webkit-transition: all 0.25s linear;
     -moz-transition: all 0.25s linear;
@@ -66,6 +91,19 @@
     -o-transition: all 0.25s linear;
     transition: all 0.25s linear;
 }
+
+
+
+.bandblock:hover{
+    opacity: .7;
+    -webkit-transition: all 0.25s linear;
+    -moz-transition: all 0.25s linear;
+    -ms-transition: all 0.25s linear;
+    -o-transition: all 0.25s linear;
+    transition: all 0.25s linear;
+}
+
+
 
 .bandname {
     margin-left: 10px;
@@ -150,7 +188,7 @@
     color: white;
     display: block;
     float: left;
-    margin-right: 2em;
+    margin-right: 1em;
     font-size: 1.25em;
 }
 
@@ -166,7 +204,7 @@
     color: white;
     display: block;
     float: left;
-    margin-right: 2em;
+    margin-right: 1em;
     font-size: 1.25em;
 }
 
@@ -182,7 +220,7 @@
     color: white;
     display: block;
     float: left;
-    margin-right: 2em;
+    margin-right: 1em;
     font-size: 1.25em;
 }
 
@@ -194,11 +232,45 @@
     color: #F02A2A;
 }
 
+.bc_offsite a:visited {
+    color: white;
+}
+
+.artistconflict {
+    color:white;
+    display: block;
+    float: left;
+    clear: left;
+}
+
+.artistconflict a:link {
+    color: white;
+}
+
+.artistconflict a:hover {
+    color: #F02A2A;
+}
+.artistconflict a:visited {
+    color: white;
+}
+
+.conflictrow a:link {
+    color: white;
+}
+
+.conflictrow a:hover {
+    color: #F02A2A;
+}
+.conflictrow a:visited {
+    color: white;
+}
+
+
 .ytTitle {
     display: block;
     text-align: center;
     float: left;
-    margin-right: 2em;
+    margin-right: 1em;
     font-size: 1em;
 }
 
@@ -236,7 +308,7 @@
     width:90%;
     margin-left: 1%;
     margin-top:1%;
-    padding-top: 1em;
+    /*padding-top: 1em;*/
     padding-left: 1em;
 }
 
@@ -262,12 +334,21 @@
 
 }
 
+.artisttime {
+    float:left;
+    clear: left;
+}
+
 .authLinks {
     margin-top: 1px;
     margin-right: 1px;
 }
 
 @media only screen and (max-width: 767px) {
+    .container {
+        width: 95% !important;
+    }
+
     .bc_url a:link {
         color: white;
         font-size: .8em;
@@ -275,14 +356,26 @@
     .bc_url {
         font-size: .8em;   
     }
+    .artisttime {
+        font-size: .8em;
+    }
 
-.bc_offsite {
-    color: white;
-    display: block;
-    float: left;
-    margin-right: 2em;
-    font-size: .8em;
-}
+    .fa {
+        opacity: .6;
+        top:40%;
+    }
+
+    .bandname {
+        font-size: 1em;
+    }
+
+    .bc_offsite {
+        color: white;
+        display: block;
+        float: left;
+        margin-right: 2em;
+        font-size: .8em;
+    }
 
     .bc_url a:hover {
         color: #F02A2A;
@@ -292,7 +385,7 @@
         color: white;
         display: block;
         float: left;
-        margin-right: 2em;
+        margin-right: 1em;
         font-size: .85em;
     }
     .ytTitle {
@@ -499,6 +592,21 @@
     }
 }
 
+/*conflict*/
+#conflict_popup {
+    margin: 1em;
+    padding: 1em;
+    width: 50%;
+    height: 50%;
+    background-color: white;
+    display: block;
+    position: fixed;
+    top: 20%;
+    left: 25%;
+    border: 1px solid #333333;
+    text-align: left;
+    overflow: auto;
+}
 
 /*wrong stuff*/
 #wrong_popup {

@@ -1,14 +1,15 @@
 <?php
 require 'includes/master.inc.php';
 require 'includes/connect.php';
-require 'includes/Mobile_Detect.php';
+require_once 'includes/Mobile_Detect.php';
 
-$mobileDetector = new Mobile_Detect;
-$isMobile = $mobileDetector->isMobile() || $mobileDetector->isTablet();
+$mobile_detector = new Mobile_Detect;
+// $is_mobile = $mobile_detector->is_mobile() || $mobile_detector->isTablet();
+if ($mobile_detector->isMobile() || $mobile_detector->isTablet()) {
+	$is_mobile = 1;
+}
 
 $testauthid = $Auth->id;
-
-
 
 // This is for the infinite scroll
 $page = (int) (!isset($_GET['p'])) ? 1 : $_GET['p'];
@@ -40,11 +41,12 @@ if (mysql_num_rows($query) < 1) {
 }
 
  if($Auth->loggedIn()) {
+ 	$userid = $Auth->id;
  	$li = 1;
  }
 
-$festInfo = new festInfo();
-$genres = $festInfo->genreBuilder();
+$fest_info = new festInfo();
+$genres = $fest_info->genreBuilder();
 
 // <?php echo $Auth->user->username; 
 
@@ -72,25 +74,17 @@ $genres = $festInfo->genreBuilder();
 	<link rel="stylesheet" href="stylesheets/base.css">
 	<link rel="stylesheet" href="stylesheets/skeleton.css">
 	<link rel="stylesheet" href="stylesheets/layout.css">
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
-	<!--[if lt IE 9]>
-		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-	<![endif]-->
-
-	<!-- Favicons
-	================================================== -->
-	<link rel="shortcut icon" href="images/favicon.ico">
-	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-	<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
-	<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+	
  	<script src="js/jquery.js"></script>
  	<script src="js/jqueryui.js"></script>
- 	 <script src="js/jquery-ias.min.js"></script>
+ 	<script src="js/jquery-ias.min.js"></script>
 	<!-- <link rel="stylesheet" href="js/jquery-ui.css"> -->
 
- 	
+<!-- Different JS for different types of devices - so we can do starring, datachecking, etc -->
 <?php 
-if($isMobile) {
+if($is_mobile) {
 	if ($li == 1){
 		echo '<script type="text/javascript" src="js/mobile_liscripts.js"></script>';
 		}
@@ -122,7 +116,7 @@ else {
     </script>
 
 </head>
-<body>
+<body userid='<?php if($userid){echo $userid;} ?>'>
 
 
 
@@ -147,6 +141,7 @@ else {
 	<?php while ($row = mysql_fetch_array($query)): ?>
 	<div class="sixteen column item band" class="bandclick" band="<?php echo $row['band'];?>" artistid=<?php echo $row['id'];?> style="background-image:url(<?php echo $row['pathtoimage'];?>);" id="item-<?php echo $row['id']?>">
 			<span class="bandblock" id="bandblock<?php echo $row['id']?>" >
+				<i class="fa fa-angle-double-down fa-<?php if($is_mobile){echo '2x';}else{echo "3x";} ?>" id='arrow<?php echo $row['id'];?>'></i>
 				<span class="bandname <?php echo $row['band']?>" ><?php echo $row['band']?><br /></span>
 				<span class="genre <?php echo $row['band']?>"> <?php echo $row['genre']?></span>
 				<button class="close" id="close<?php echo $row['id']?>" style='display:none;'onclick="closeStuff()">close</button>
@@ -174,7 +169,7 @@ else {
     		$("#pagehider").css("height", $(document).height()).hide();
 		});
     </script>
-    <script>
+<script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -182,7 +177,6 @@ else {
 
   ga('create', 'UA-54429804-1', 'auto');
   ga('send', 'pageview');
-
 </script>
 
 <!-- End Document

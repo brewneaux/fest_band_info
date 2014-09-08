@@ -5,10 +5,32 @@ $(document).on("touchstart click", '.band', function(){
         var wrappernumber = $(this).attr("wrappernumber");
         $('#close' + artistid).delay(400).fadeIn();
         $('#wrong' + artistid).delay(400).fadeIn();
+        $('#arrow' + artistid).fadeOut(800);
         getArtistData(artistid,wrappernumber);
         
     }
 });
+
+$(document).on("touchstart click", '.artistconflict', function() {  
+    $('.popup').remove();
+    var artistid = $(this).attr('artistid');
+    getArtistConflict(artistid);
+   $('body').css('overflow','hidden');
+
+});
+
+function closeConflict() {
+    $(document).on("touchstart click", function(event){
+        if(!$(event.target).closest('.popup').length) {
+            $(".popup").fadeOut("medium", function(){ this.remove();$('body').css('overflow','auto');});
+        }
+    });
+    event.stopPropogation(); 
+   
+  
+
+}
+
 
 $('.close').click(function(e) {
     e.preventDefault();
@@ -54,7 +76,7 @@ function wrongStuff(band,artistid) {
                     setTimeout(function() {
                         $('#wrong_popup').fadeOut(800, function(){this.remove();});
                     }, 1400);
-                    
+                    expandYoutube();
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                 }
@@ -76,6 +98,7 @@ function closeStuff() {
                 $('.slideout').removeClass('slideout',600,'easeInOutQuad');
                 $('.close').fadeOut(300, function() {$(this).hide();})
                 $('.wrong').fadeOut(300, function() {$(this).hide();})
+                $('.fa:hidden').fadeIn();
 }
 
 $( document ).on( 'keydown', function ( e ) {
@@ -94,28 +117,22 @@ function genredropdownGo() {
 }
 
 function getArtistData(artistid,wrappernumber) {
-        $.getJSON("includes/artistdata.php?action=getArtist", {artist:artistid}, function( data ) {
-              if (data == 'STOP THAT!'){alert("stop that!");}
-            else {
-                
-                $('#bandblock' + artistid).append('<div class="slided" id="slided'+artistid+'" style="display:none;"></div>');
-                
-                $("#slided"+artistid).html(
-                        "<span class='spotifyUri'> <a id='spotifyUriA' href='" + data.spotify_uri + "'>Spotify App</a></span>" +
-                        "<span class='spotifyUri'> <a id='spotifyUriB' href='" + data.spotify_web + "'>Spotify Web</a></span>" +
-                        "<span class='ytTitle'>Top Song (according to Last.fm): " + data.lastfm_topsong  + "</span>" +
-                        "<div class='ytEmbed' ><div class='ytEmbedOne'><iframe width='300' height='300' src='https://www.youtube.com/embed/" + data.youtube_id + "?theme=light'></iframe></div></div>" +
-                        "<span class='bc_url'> <a id='bc_url_id' href='" + data.bandcamp_url + "'>Bandcamp URL</a></span>" +
-                        "<span class='bc_offsite'> <a id='bc_offsite_id' href='" + data.bandcamp_offsite + "'>Website</a></span>"
-                );
-                // $('#item-' + artistid).delay(1000).addClass('slideout');
-                setTimeout(function(){
-                    $('#item-' + artistid).addClass('slideout');
-                    $(".slided").fadeIn("fast");
-                },250);
-                expandYoutube();
-            }
-        });
+    $('#bandblock' + artistid).append('<div class="slided" id="slided'+artistid+'" style="display:none;"></div>');
+    $('#slided' + artistid).load("includes/artistdata.php?action=getArtistHTML&artist=" + artistid);
+     setTimeout(function(){
+    $('#item-' + artistid).addClass('slideout');
+    $(".slided").fadeIn("fast");
+        },250);
+    expandYoutube();
+}
+
+function getArtistConflict(artistid) {
+       $('body').css('overflow','hidden');
+
+    $('body').append('<div id="conflict_popup" class="popup" style="display:none;"></div>');
+    $('#conflict_popup').load("includes/artistdata.php?action=getConflicts&artist=" + artistid);
+    $('#conflict_popup').fadeIn();
+    closeConflict();
 }
 
 
@@ -136,3 +153,4 @@ function expandYoutube(){
         }
     );
 }
+

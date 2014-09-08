@@ -429,15 +429,17 @@ if ($image_url_array) {
 	}
 }
 
-$img = new Imagick("../img/*.jpg");
-foreach($images as $image) {
+// Had trouble getting this to work, so I do it by hand for now.
 
-	$img->modulateImage(100, 0, 100);
-	$img->ThumbnailImage(300,180);
-}
-$img->writeImage();
+// $img = new Imagick("../img/*.jpg");
+// foreach($images as $image) {
 
-echo "finished images\n";
+// 	$img->modulateImage(100, 0, 100);
+// 	$img->ThumbnailImage(300,180);
+// }
+// $img->writeImage();
+
+// echo "finished images\n";
 
 
 

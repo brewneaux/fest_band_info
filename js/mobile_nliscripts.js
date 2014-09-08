@@ -5,9 +5,15 @@ $(document).on("touchstart click", '.band', function(){
         var wrappernumber = $(this).attr("wrappernumber");
         $('#close' + artistid).delay(400).fadeIn();
         $('#wrong' + artistid).delay(400).fadeIn();
+        $('#arrow' + artistid).fadeOut(800);
         getArtistData(artistid,wrappernumber);
         
     }
+});
+
+$(document).on("touchstart click", '.artistconflict', function() {  
+    var artistid = $(this).attr('artistid');
+    getArtistConflict(artistid);
 });
 
 $('.close').click(function(e) {
@@ -54,7 +60,7 @@ function wrongStuff(band,artistid) {
                     setTimeout(function() {
                         $('#wrong_popup').fadeOut(800, function(){this.remove();});
                     }, 1400);
-                    
+                    expandYoutube();
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                 }
@@ -76,6 +82,7 @@ function closeStuff() {
                 $('.slideout').removeClass('slideout',600,'easeInOutQuad');
                 $('.close').fadeOut(300, function() {$(this).hide();})
                 $('.wrong').fadeOut(300, function() {$(this).hide();})
+                $('.fa:hidden').fadeIn();
 }
 
 $( document ).on( 'keydown', function ( e ) {
@@ -94,27 +101,19 @@ function genredropdownGo() {
 }
 
 function getArtistData(artistid,wrappernumber) {
-        $.getJSON("includes/artistdata.php?action=getArtist", {artist:artistid}, function( data ) {
-              if (data == 'STOP THAT!'){alert("stop that!");}
-            else {
-                
-                $('#bandblock' + artistid).append('<div class="slided" id="slided'+artistid+'" style="display:none;"></div>');
-                
-                $("#slided"+artistid).html(
-                        "<span class='spotifyUri'> <a id='spotifyUriA' href='" + data.spotify_uri + "'>Spotify App</a></span>" +
-                        "<span class='spotifyUri'> <a id='spotifyUriB' href='" + data.spotify_web + "'>Spotify Web</a></span>" +
-                        "<span class='ytTitleMobile'><a href='http://www.youtube.com/v/" + data.youtube_id + "'>Top Song (according to Last.fm): " + data.lastfm_topsong  + "</a></span>" +
-                        "<span class='bc_url'> <a id='bc_url_id' href='" + data.bandcamp_url + "'>Bandcamp URL</a></span>" +
-                        "<span class='bc_offsite'> <a id='bc_offsite_id' href='" + data.bandcamp_offsite + "'>Website</a></span>"
-                );
-                // $('#item-' + artistid).delay(1000).addClass('slideout');
-                setTimeout(function(){
-                    $('#item-' + artistid).addClass('slideout');
-                    $(".slided").fadeIn("fast");
-                },250);
-                expandYoutube();
-            }
-        });
+    $('#bandblock' + artistid).append('<div class="slided" id="slided'+artistid+'" style="display:none;"></div>');
+    $('#slided' + artistid).load("includes/artistdata.php?action=getArtistHTML&artist=" + artistid);
+     setTimeout(function(){
+    $('#item-' + artistid).addClass('slideout');
+    $(".slided").fadeIn("fast");
+        },250);
+    expandYoutube();
+}
+
+function getArtistConflict(artistid) {
+    $('body').append('<div id="conflict_popup" style="display:none;"></div>');
+    $('#conflict_popup').load("includes/artistdata.php?action=getConflicts&artist=" + artistid);
+
 }
 
 
@@ -135,3 +134,4 @@ function expandYoutube(){
         }
     );
 }
+

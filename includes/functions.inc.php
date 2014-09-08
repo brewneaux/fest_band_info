@@ -850,7 +850,7 @@
         if (ctype_alpha($urlstring)) {
             if (strlen($urlstring) == 1) {
                 $querystring = "'" . $urlstring . "'";
-                $sql = "SELECT id,band,lastfm_genre,spotify_uri,spotify_web,bandcamp_offsite,pathtoimage FROM fest_info_working_1 WHERE LEFT(band, 1) = {$querystring} ORDER BY id ASC";
+                $sql = "SELECT  id,band,genre,spotify_uri,spotify_web,bandcamp_offsite,pathtoimage FROM fest_info_working_1 WHERE LEFT(band, 1) = {$querystring} ORDER BY id ASC";
                 return $sql;
             }
             else {
