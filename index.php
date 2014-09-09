@@ -133,7 +133,7 @@ else {
 
 	<div class="container">
 		<div class="sixteen columns">
-			<div class="remove-bottom festHeader" class="" >Fest 13: All yr band needs</div>
+			<div class="remove-bottom festHeader" class="" >Fest 13: All yr band needs </div>
 
 
 		</div>

@@ -2,31 +2,22 @@ $(document).on("touchstart click", '.band', function(){
     if(!$(this).hasClass('slideout') || !$(this).hasClass('slideout')) {    
         var thisid = this.id;
         var artistid = thisid.split("-")[1];
-        var wrappernumber = $(this).attr("wrappernumber");
+        var userid = $('body').attr("userid");
         $('#close' + artistid).delay(400).fadeIn();
         $('#wrong' + artistid).delay(400).fadeIn();
         $('#arrow' + artistid).fadeOut(800);
-        getArtistData(artistid,wrappernumber);
+        getArtistData(artistid,userid);
         
     }
 });
 
 $(document).on("touchstart click", '.artistconflict', function() {  
+    $('.popup').remove();
     var artistid = $(this).attr('artistid');
     getArtistConflict(artistid);
-});
+   $('body').css('overflow','hidden');
 
-$('.close').click(function(e) {
-    e.preventDefault();
 });
-
-function closeWrongFunction() {
-    $(document).on("touchstart click", function(event){
-        if(!$(event.target).closest('#wrong_popup').length) {
-            $("#wrong_popup").fadeOut("medium", function(){ this.remove();});
-        }
-    });
-}
 
 $(document).on("touchstart click", '.wrong', function() {
     var band = $(this).parent().parent().attr('band');
@@ -34,6 +25,46 @@ $(document).on("touchstart click", '.wrong', function() {
     $.when(wrongStuff(band,artistid).then(closeWrongFunction));
 
 });
+
+$(document).on("touchstart click", function(event){
+    if(!$(event.target).closest('#wrong_popup').length) {
+        $("#wrong_popup").fadeOut("medium", function(){ this.remove();});
+    }
+});
+
+$('.close').click(function(e) {
+    e.preventDefault();
+});
+
+$( document ).on( 'keydown', function ( e ) {
+    if ( e.keyCode === 27 ) { // ESC
+        $(".hidden").fadeOut("medium", function(){ this.remove();});
+        $("#pagehider").fadeOut("medium", function(){ this.remove();});
+    }
+});
+
+// Buncha functions.  First the opens.
+
+function alphadropdownGo() {
+    window.location = document.getElementById("alpha_dropdown").value;
+}
+
+function genredropdownGo() {
+    window.location = document.getElementById("genredropdown").value;
+}
+
+function getArtistData(artistid,userid) {
+    $('#bandblock' + artistid).append('<div class="slided" id="slided'+artistid+'" style="display:none;"></div>');
+    $('#slided' + artistid).load("includes/artistdata.php?action=getArtistHTML&artist=" + artistid + '&userid=' + userid);
+     setTimeout(function(){
+    $('#item-' + artistid).addClass('slideout');
+    $(".slided").fadeIn("fast");
+        },250);
+    setTimeout(function(){
+        expandYoutube();
+    },600);
+}
+
 
 function wrongStuff(band,artistid) {
     $('body').append('<div id="wrong_popup" style="display:none;"></div>');
@@ -69,51 +100,12 @@ function wrongStuff(band,artistid) {
 
 }
 
-
-$(document).on("touchstart click", function(event){
-    if(!$(event.target).closest('#wrong_popup').length) {
-        $("#wrong_popup").fadeOut("medium", function(){ this.remove();});
-    }
-});
-
-
-function closeStuff() {
-                $('.slided').fadeOut(300, function() { $(this).remove();$('.slideout').removeClass('slideout',600,'easeInOutQuad'); });
-                $('.slideout').removeClass('slideout',600,'easeInOutQuad');
-                $('.close').fadeOut(300, function() {$(this).hide();})
-                $('.wrong').fadeOut(300, function() {$(this).hide();})
-                $('.fa:hidden').fadeIn();
-}
-
-$( document ).on( 'keydown', function ( e ) {
-    if ( e.keyCode === 27 ) { // ESC
-        $(".hidden").fadeOut("medium", function(){ this.remove();});
-        $("#pagehider").fadeOut("medium", function(){ this.remove();});
-    }
-});
-
-function alphadropdownGo() {
-    window.location = document.getElementById("alpha_dropdown").value;
-}
-
-function genredropdownGo() {
-    window.location = document.getElementById("genredropdown").value;
-}
-
-function getArtistData(artistid,wrappernumber) {
-    $('#bandblock' + artistid).append('<div class="slided" id="slided'+artistid+'" style="display:none;"></div>');
-    $('#slided' + artistid).load("includes/artistdata.php?action=getArtistHTML&artist=" + artistid);
-     setTimeout(function(){
-    $('#item-' + artistid).addClass('slideout');
-    $(".slided").fadeIn("fast");
-        },250);
-    expandYoutube();
-}
-
 function getArtistConflict(artistid) {
-    $('body').append('<div id="conflict_popup" style="display:none;"></div>');
+    $('body').css('overflow','hidden');
+    $('body').append('<div id="conflict_popup" class="popup" style="display:none;"></div>');
     $('#conflict_popup').load("includes/artistdata.php?action=getConflicts&artist=" + artistid);
-
+    $('#conflict_popup').fadeIn();
+    closeConflict();
 }
 
 
@@ -134,4 +126,37 @@ function expandYoutube(){
         }
     );
 }
+
+
+// Close
+
+function closeConflict() {
+    $(document).on("touchstart click", function(event){
+        if(!$(event.target).closest('.popup').length) {
+            $(".popup").fadeOut("medium", function(){ this.remove();$('body').css('overflow','auto');});
+        }
+    });
+    event.stopPropogation(); 
+}
+
+function closeWrongFunction() {
+    $(document).on("touchstart click", function(event){
+        if(!$(event.target).closest('#wrong_popup').length) {
+            $("#wrong_popup").fadeOut("medium", function(){ this.remove();});
+        }
+    });
+}
+
+function closeStuff() {
+                $('.slided').fadeOut(300, function() { $(this).remove();$('.slideout').removeClass('slideout',600,'easeInOutQuad'); });
+                $('.slideout').removeClass('slideout',600,'easeInOutQuad');
+                $('.close').fadeOut(300, function() {$(this).hide();})
+                $('.wrong').fadeOut(300, function() {$(this).hide();})
+                $('.fa:hidden').fadeIn();
+}
+
+
+
+
+
 

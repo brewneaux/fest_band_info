@@ -62,6 +62,15 @@
     transition: all 0.25s linear;
 }
 
+/*.artistleft {
+    width: 70%;
+}
+
+.artistright {
+    width: 30%;
+}
+*/
+
 .fa {
     display: inline-block;
     font: normal normal normal 14px/1 FontAwesome;
@@ -235,6 +244,9 @@
 .bc_offsite a:visited {
     color: white;
 }
+.artistlink {
+    cursor: pointer;
+}
 
 .artistconflict {
     color:white;
@@ -243,14 +255,14 @@
     clear: left;
 }
 
-.artistconflict a:link {
+.artistlink a:link {
     color: white;
 }
 
-.artistconflict a:hover {
+.artistlink a:hover {
     color: #F02A2A;
 }
-.artistconflict a:visited {
+.artistlink a:visited {
     color: white;
 }
 
@@ -263,6 +275,13 @@
 }
 .conflictrow a:visited {
     color: white;
+}
+
+.artistadd {
+    color:white;
+    float:left;
+    display:block;
+    margin-left:1em;
 }
 
 

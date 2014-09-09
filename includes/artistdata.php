@@ -3,14 +3,7 @@
 include('connect.php');
 //include config file
 
-if($_GET["action"] == "getArtist") {
-	$artist_id = $_GET['artist'];
-	getArtist($dbi,$artist_id);
-}
-elseif ($_GET['action'] == "helloWorld") {
-	helloWorld();
-}
-elseif ($_GET['action'] == "wrongData") {
+if ($_GET['action'] == "wrongData") {
 	$artist_id = $_POST['artist_id'];
 	$element = $_POST['element'];
 	$suggestion = $_POST['suggestion'];
@@ -30,34 +23,21 @@ elseif ($_GET["action"] == "getArtistHTML") {
 elseif ($_GET["action"] == "getConflicts") {
 	$artist_id = $_GET['artist'];
 	getConflicts($dbi,$artist_id);
+}
+elseif ($_GET["action"] == "checkArtistId") {
+	$artist_id = $_GET['artist'];
+	getConflicts($dbi,$artist_id);
+}
+elseif ($_GET["action"] == "addArtistToList") {
+	$artist_id = $_POST['artistid'];
+	$user_id = $_POST['userid'];
+	addArtistToList($dbi,$artist_id,$user_id);
 } 
 else {
 	header('HTTP/1.1 400 Bad Request');
 }
 
-function getArtist($dbi, $artistname) {
 
-	if (!is_numeric($artistname)){
-		echo json_encode('stop that!');
-	}
-
-	$query = "SELECT id,band,lastfm_genre,spotify_uri,spotify_web,bandcamp_offsite,bandcamp_url,pathtoimage,youtube_id,lastfm_topsong FROM fest_info_working_1 WHERE id=" . $artistname;
-
-	if($results = $dbi->query($query)) {
-		if ($results->num_rows > 1){
-			return 'error, too many rows returned';
-		}
-		else {
-			$row = $results->fetch_assoc();
-			// header('Content-Type: application/json');
-			echo json_encode($row);
-		}
-	}
-}
-
-function helloWorld() {
-	echo json_encode('value');
-}
 
 function wrongData($dbi, $artist_id,$element,$suggestion) {
 	$suggestion = $dbi->real_escape_string($suggestion);
@@ -99,9 +79,11 @@ function setStars($dbi, $user_id, $artist_id, $rating) {
 }
 
 function getConflicts($dbi, $artist_id) {
-	if (!is_numeric($artist_id)){
-		echo json_encode('stop that!');
+	if(!checkArtistId($dbi,$artist_id)) {
+		header('HTTP/1.1 400 Bad Request');
+		exit;
 	}
+
 
 	$bandname_query = "SELECT i.band, date_format(t.starttime, '%l:%i %p') AS starttime, date_format(t.endtime, '%l:%i %p') AS endtime FROM fest_info_working_1 i join fest_times_temp t on i.band=t.band where id = $artist_id";
 
@@ -160,15 +142,17 @@ EOD;
 }
 
 
-function getArtistHTML($dbi, $artistname) {
-	if (!is_numeric($artistname)){
-	echo json_encode('stop that!');
+function getArtistHTML($dbi, $artistname, $user_id) {
+	if(!checkArtistId($dbi,$artistname)) {
+		header('HTTP/1.1 400 Bad Request');
+		exit;
 	}
 
 	$query = <<<QUR1
 SELECT 
 	i.id,
 	i.band,
+	i.genre,
 	i.lastfm_genre,
 	i.spotify_uri,
 	i.spotify_web,
@@ -197,7 +181,7 @@ QUR1;
 	}
 
 
-	$return_html = "<div class='artistdatatop'>
+	$return_html = "<div class='artistleft'><div class='artistdatatop'>
 ";
 	
 	if (!empty($row['spotify_uri'])) {
@@ -226,21 +210,63 @@ EOD;
 EOD;
 	}
 
+	if($row['genre'] != 'Dropped'){
 	$return_html .= <<<EOD
 	</div> 
 	<div class='artistdatabottom'>
 		<span class='artisttime'>{$row['day']} - {$row['location']} - {$row['time']} </span>
-		<span class='conflictrow'><a artistid="$artistname" class='artistconflict' id="conflict{$artistname}"> Show conflicts popup</a> </span>
-	</div>
+		<span class='conflictrow'><a artistid="$artistname" class='artistlink artistconflict' id="conflict{$artistname}"> Show conflicts popup</a>
 EOD;
-
-
-
+	if ($user_id > 0){
+		$return_html .= "- <a class='artistlink artistadd' band='" . $artistname . "' id='artistadd" . $artistname . "'>Add to your schedule</a></span>";
+	}
+ 
+	$return_html .= "</div></div>";
+}
+	else {
+		$return_html .= "</div>";
+	}
 
 echo $return_html;
 }
 
+function checkArtistId($dbi,$artistid) {
+	if (!is_numeric($artistid)){
+		echo json_encode('stop that!');
+	}
+	else {
+		if($exists = $dbi->query("SELECT count(*) as `exists` from fest_info_working_1 where id = $artistid")){
+			$existstrue = $exists->fetch_row();
+			if($existstrue[0]) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		else{
+			return false;
+		}
+	}
+}
 
+function addArtistToList($dbi,$artistid,$userid) {
+	if(!checkArtistId($dbi,$userid)) {
+		header('HTTP/1.1 400 Bad Request');
+		exit;
+	}
+	if (!ctype_digit($userid)){
+		return false;
+	}
+
+	if($dbi->query("INSERT IGNORE INTO fest_user_schedule (userid, artistid, active) values ($userid, $artistid, 1)")) {
+		return true;
+	}
+	else {
+		return false;
+	}
+
+}
 
 
 
