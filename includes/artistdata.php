@@ -31,7 +31,12 @@ elseif ($_GET["action"] == "checkArtistId") {
 elseif ($_GET["action"] == "addArtistToList") {
 	$artist_id = $_POST['artistid'];
 	$user_id = $_POST['userid'];
-	addArtistToList($dbi,$artist_id,$user_id);
+	addArtistToList($dbi,$user_id,$artist_id);
+} 
+elseif ($_GET["action"] == "removeArtistFromList") {
+	$artist_id = $_POST['artistid'];
+	$user_id = $_POST['userid'];
+	removeArtistFromList($dbi,$artist_id,$user_id);
 } 
 else {
 	header('HTTP/1.1 400 Bad Request');
@@ -141,9 +146,34 @@ EOD;
 // close func
 }
 
+function artistScheduleLookup($dbi,$artistid, $user_id) {
+	if(!checkArtistId($dbi,$artistid)) {
+		header('HTTP/1.1 400 Bad Request');
+		exit;
+	}
 
-function getArtistHTML($dbi, $artistname, $user_id) {
-	if(!checkArtistId($dbi,$artistname)) {
+	$query = "SELECT COUNT(*) FROM fest_user_schedule WHERE active = 1 and artistid = {$artistid} and userid = {$user_id}";
+
+	if($result = $dbi->query($query)) {
+		$set = $result->fetch_row();
+		$exists = $set[0];
+	}
+	else {
+		// $exists = false;
+	}
+
+	if($exists) {
+		return true;
+	}
+	else {
+		return false;
+	}
+
+}
+
+
+function getArtistHTML($dbi, $artistid, $user_id) {
+	if(!checkArtistId($dbi,$artistid)) {
 		header('HTTP/1.1 400 Bad Request');
 		exit;
 	}
@@ -168,7 +198,7 @@ SELECT
 FROM fest_info_working_1 AS i
 LEFT JOIN fest_times t
 	ON t.fest_info_band_id = i.id
-WHERE id="{$artistname}" ORDER BY time LIMIT 1;
+WHERE id="{$artistid}" ORDER BY time LIMIT 1;
 QUR1;
 
 	if($results = $dbi->query($query)) {
@@ -180,6 +210,7 @@ QUR1;
 		}
 	}
 
+	$artist_in_schedule = artistScheduleLookup($dbi,$artistid,$user_id);
 
 	$return_html = "<div class='artistleft'><div class='artistdatatop'>
 ";
@@ -211,14 +242,18 @@ EOD;
 	}
 
 	if($row['genre'] != 'Dropped'){
-	$return_html .= <<<EOD
+		$return_html .= <<<EOD
 	</div> 
 	<div class='artistdatabottom'>
 		<span class='artisttime'>{$row['day']} - {$row['location']} - {$row['time']} </span>
-		<span class='conflictrow'><a artistid="$artistname" class='artistlink artistconflict' id="conflict{$artistname}"> Show conflicts popup</a>
+		<span class='conflictrow'><a artistid="$artistid" class='artistlink artistconflict' id="conflict{$artistid}">Show conflicts popup</a>
 EOD;
-	if ($user_id > 0){
-		$return_html .= "- <a class='artistlink artistadd' band='" . $artistname . "' id='artistadd" . $artistname . "'>Add to your schedule</a></span>";
+
+	if ($user_id > 0 && !$artist_in_schedule) {
+		$return_html .= "- <a class='artistlink artistadd' band='" . $artistid . "' id='artistadd" . $artistid . "'>Add to your schedule</a></span>";
+	}
+	elseif ($user_id > 0) {
+		$return_html .= "- <a class='artistlink artistremove' band='" . $artistid . "' id='artistadd" . $artistid . "'>Remove from your schedule</a></span>";
 	}
  
 	$return_html .= "</div></div>";
@@ -250,7 +285,7 @@ function checkArtistId($dbi,$artistid) {
 	}
 }
 
-function addArtistToList($dbi,$artistid,$userid) {
+function addArtistToList($dbi,$userid,$artistid) {
 	if(!checkArtistId($dbi,$userid)) {
 		header('HTTP/1.1 400 Bad Request');
 		exit;
@@ -259,7 +294,7 @@ function addArtistToList($dbi,$artistid,$userid) {
 		return false;
 	}
 
-	if($dbi->query("INSERT IGNORE INTO fest_user_schedule (userid, artistid, active) values ($userid, $artistid, 1)")) {
+	if($dbi->query("REPLACE INTO fest_user_schedule (userid, artistid, active) values ($userid, $artistid, 1)")) {
 		return true;
 	}
 	else {
@@ -268,7 +303,25 @@ function addArtistToList($dbi,$artistid,$userid) {
 
 }
 
+function removeArtistFromList($dbi,$artist_id,$user_id) {
+	if(!checkArtistId($dbi,$user_id)) {
+		header('HTTP/1.1 400 Bad Request');
+		exit;
+	}
+	if (!ctype_digit($user_id)){
+		header('HTTP/1.1 400 Bad Request');
+		exit;
+	}
 
+	if($dbi->query("UPDATE fest_user_schedule set active = 0 WHERE artistid = {$artist_id} and userid = {$user_id}")) {
+		return true;
+	}
+	else {
+		header('HTTP/1.1 400 Bad Request');
+		exit;
+	}
+
+}
 
 
 

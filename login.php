@@ -102,7 +102,7 @@
 
     <div class='createUser four columns offset-by-one'>
         <span id='createTitle'> CREATE USER </span> <br />
-        <span id='createDescription'>  </span>
+        <span id='createDescription'> Usernames and passwords can only be letters, numbers, and <br /> ., #, \, -, _, $  </span>
         <form action="<?PHP echo $_SERVER['PHP_SELF']; ?>" method="post">        
                     <input type="hidden" name="reqtime" value="<?PHP echo $_SERVER['REQUEST_TIME']; ?>" id="reqtime">
             <input type="hidden" name="userip" value="<?PHP echo $user_ip; ?>" id="userip">    

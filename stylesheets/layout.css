@@ -277,7 +277,7 @@
     color: white;
 }
 
-.artistadd {
+.artistadd, .artistremove {
     color:white;
     float:left;
     display:block;

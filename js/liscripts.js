@@ -15,8 +15,12 @@ $(document).on("touchstart click", '.artistadd', function(){
         var artistid = $(this).attr('band');
         var userid = $('body').attr("userid");
         addArtistToList(userid, artistid);
-        
-    
+});
+
+$(document).on("touchstart click", '.artistremove', function(){
+        var artistid = $(this).attr('band');
+        var userid = $('body').attr("userid");
+        removeArtistFromList(userid, artistid);
 });
 
 $(document).on("touchstart click", '.artistconflict', function() {  
@@ -124,6 +128,18 @@ function addArtistToList(userid,artistid) {
         data: "userid=" + userid + "&artistid=" + artistid,
         success: function() {            
                 $('#artistadd' + artistid).replaceWith("<span id='artistadd" + artistid +"' class='artistadd'>Added the artist to your schedule!</span");
+        }
+    });
+}
+
+function removeArtistFromList(userid,artistid) {
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url: "includes/artistdata.php?action=removeArtistFromList",
+        data: "userid=" + userid + "&artistid=" + artistid,
+        success: function() {            
+                $('#artistadd' + artistid).replaceWith("<span id='artistadd" + artistid +"' class='artistadd'>Removed the artist from your schedule!</span");
         }
     });
 }
