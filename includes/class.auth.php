@@ -154,7 +154,7 @@
             }
         }
 
-        public static function createNewUser($username, $password = null, $email)
+        public static function createNewUser($username, $password = null, $ip, $reqtime)
         {
 	    $db = Database::getDatabase();
 
@@ -162,18 +162,21 @@
             if($user_exists > 0)
                 return false;
 
-            if(is_null($email)){
-                $email = 'email@email.com';
-            }
+            // if(is_null($email)){
+            //     $email = 'email@email.com';
+            // }
 
             if(is_null($password))
                 $password = Auth::generateStrongPassword();
+
 
             srand(time());
             $u = new User();
             $u->username = $username;
             $u->nid = self::newNid();
             $u->password = self::hashedPassword($password);
+            $u->ip = $ip;
+            $u->now = $reqtime;
             $u->insert();
             return $u;
         }

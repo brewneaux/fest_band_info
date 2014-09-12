@@ -5,7 +5,7 @@
     {
         public function __construct($id = null)
         {
-            parent::__construct('users', array('nid', 'username', 'password', 'level'), $id);
+            parent::__construct('users', array('nid', 'username', 'password', 'level', 'ip', 'cdate'), $id);
         }
 
     }

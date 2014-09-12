@@ -1,7 +1,10 @@
 <?PHP
     require 'includes/master.inc.php';
 
-    if($Auth->loggedIn()) redirect('simple/..');
+    $user_ip = ip2long($_SERVER['REMOTE_ADDR']);
+    $request_time = $_SERVER['REQUEST_TIME'];
+
+    if($Auth->loggedIn()) redirect(WEB_ROOT);
 
     if(!empty($_POST['username']))
     {
@@ -25,7 +28,7 @@
     if($Auth->isValid($_POST['regusername']) && $_POST['regpassword'] == $_POST['confpassword'] && $Auth->isValid($_POST['regpassword'])){
         if(!empty($_POST['regusername']))
             {
-                if($Auth->createNewUser($_POST['regusername'], $_POST['regpassword'])) {
+                if($Auth->createNewUser($_POST['regusername'], $_POST['regpassword'], $_POST['userip'], $_POST['reqtime'])) {
                     $Auth->login($_POST['regusername'], $_POST['regpassword']);
                     redirect(WEB_ROOT);
                 }
@@ -100,12 +103,15 @@
     <div class='createUser four columns offset-by-one'>
         <span id='createTitle'> CREATE USER </span> <br />
         <span id='createDescription'>  </span>
-        <form action="<?PHP echo $_SERVER['PHP_SELF']; ?>" method="post">            
+        <form action="<?PHP echo $_SERVER['PHP_SELF']; ?>" method="post">        
+                    <input type="hidden" name="reqtime" value="<?PHP echo $_SERVER['REQUEST_TIME']; ?>" id="reqtime">
+            <input type="hidden" name="userip" value="<?PHP echo $user_ip; ?>" id="userip">    
             <p><label for="regusername">Username:</label> <input type="text" name="regusername" value="<?PHP echo $regusername;?>" id="regusername" /></p>
             <p><label for="regpassword">Password:</label> <input type="password" name="regpassword" value="" id="regpassword" /></p>
             <p><label for="confpassword">Confirm Password:</label> <input type="password" name="confpassword" value="" id="confpassword" /></p>
             <p><input type="submit" name="btnlogin" value="Login" id="btnlogin" /></p>
             <input type="hidden" name="r" value="<?PHP echo htmlspecialchars(@$_REQUEST['r']); ?>" id="r">
+
         </form>
     </div>
 
