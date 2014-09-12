@@ -11,7 +11,7 @@
                 if(isset($_REQUEST['r']) && strlen($_REQUEST['r']) > 0)
                     redirect($_REQUEST['r']);
                 else
-                    redirect('simple/..');
+                    redirect(WEB_ROOT);
             }
             else
                 $Error->add('username', "We're sorry, you have entered an incorrect username and password. Please try again.");
@@ -26,10 +26,11 @@
         if(!empty($_POST['regusername']))
             {
                 if($Auth->createNewUser($_POST['regusername'], $_POST['regpassword'])) {
-                    $error->add('created', "Login created!");
+                    $Auth->login($_POST['regusername'], $_POST['regpassword']);
+                    redirect(WEB_ROOT);
                 }
                 else {
-                    $Error->add('nocreated', "Login not created");
+                    $Error->add('nocreated', "Login not created - that username may already be in use.");
                 }
             }
     }
@@ -88,7 +89,7 @@
     </div>
     <div class='returningLogin four columns'>
         <span id='loginTitle'> Log In </span> <br />
-        <span id='loginDescription'> Sample description </span>    
+        <span id='loginDescription'>  </span>    
         <form action="<?PHP echo $_SERVER['PHP_SELF']; ?>" method="post">
             <p><label for="username">Username:</label> <input type="text" name="username" value="<?PHP echo $username;?>" id="username" /></p>
             <p><label for="password">Password:</label> <input type="password" name="password" value="" id="password" /></p>
@@ -98,7 +99,7 @@
 
     <div class='createUser four columns offset-by-one'>
         <span id='createTitle'> CREATE USER </span> <br />
-        <span id='createDescription'> Sample description </span>
+        <span id='createDescription'>  </span>
         <form action="<?PHP echo $_SERVER['PHP_SELF']; ?>" method="post">            
             <p><label for="regusername">Username:</label> <input type="text" name="regusername" value="<?PHP echo $regusername;?>" id="regusername" /></p>
             <p><label for="regpassword">Password:</label> <input type="password" name="regpassword" value="" id="regpassword" /></p>

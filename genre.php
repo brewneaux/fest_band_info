@@ -13,17 +13,23 @@ $sql = buildGenreQuery($genre);
 $alpha_selectors = letterGrouper($letter);
 
 $db = Database::getDatabase();
+if (!isset($_GET['genre'])) {
 
-//sanitize post value
-$group_number = filter_var($_POST["group_no"], FILTER_SANITIZE_NUMBER_INT, FILTER_FLAG_STRIP_HIGH);
+	// sanitize post value
+	$group_number = filter_var($_POST["group_no"], FILTER_SANITIZE_NUMBER_INT, FILTER_FLAG_STRIP_HIGH);
 
-# find out query stat point
-$start = ($page * $limit) - $limit;
+	# find out query stat point
+	$start = ($page * $limit) - $limit;
 
-if( mysql_num_rows(mysql_query($sql)) > ($page * $limit) ){
-	$next = ++$page;
+	if( mysql_num_rows(mysql_query($sql)) > ($page * $limit) ){
+		$next = ++$page;
+	}
+	$query = mysql_query( $sql . " LIMIT {$start}, {$limit}");
+
 }
-$query = mysql_query( $sql . " LIMIT {$start}, {$limit}");
+else {
+	$query = mysql_query( $sql);
+}
 
 if (mysql_num_rows($query) < 1) {
 	header('HTTP/1.0 404 Not Found');

@@ -14,7 +14,7 @@ $(document).on("touchstart click", '.band', function(){
 $(document).on("touchstart click", '.artistadd', function(){
         var artistid = $(this).attr('band');
         var userid = $('body').attr("userid");
-        addArtistToList(artistid,userid);
+        addArtistToList(userid, artistid);
         
     
 });
@@ -122,11 +122,8 @@ function addArtistToList(userid,artistid) {
         type: "POST",
         url: "includes/artistdata.php?action=addArtistToList",
         data: "userid=" + userid + "&artistid=" + artistid,
-        success: function(data) {
-            if (data) {
-                $('#artistadd' + artistid).text('Successfully added to your list.');
-                $('#artistadd' + artistid).contents().unwrap();
-            }
+        success: function() {            
+                $('#artistadd' + artistid).replaceWith("<span id='artistadd" + artistid +"' class='artistadd'>Added the artist to your schedule!</span");
         }
     });
 }

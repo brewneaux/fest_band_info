@@ -70,7 +70,8 @@
         {
             $this->loggedIn = false;
             $this->clearCookies();
-            $this->sendToLoginPage();
+            // $this->sendToLoginPage();
+            redirect(WEB_ROOT);
         }
 
         public function loggedIn()
@@ -324,13 +325,14 @@
 
         private function sendToLoginPage()
         {
-            $url = $this->loginUrl;
+            $url = WEB_ROOT;
+            $url = $url . 'login.php';
 
-            $full_url = full_url();
-            if(strpos($full_url, 'logout') === false)
-            {
-                $url .= '?r=' . $full_url;
-            }
+            // $full_url = full_url();
+            // if(strpos($full_url, 'logout') === false)
+            // {
+            //     $url .= '?r=' . $full_url;
+            // }
 
             redirect($url);
         }
