@@ -131,11 +131,8 @@ else {
 	================================================== -->
 
 	<!-- Delete everything in this .container and get started on your own site! -->
-	<div class='topnav'>
-		<span class='alphadropdown alphadropdown--white'><?php echo $alpha_selectors ?> </span>
-		<span class='genredropdown genredropdown--white'><?php echo $genres; ?> </span>
-		<span class='authLinks'> <?php if(!$li) echo "<a class='login' href='login.php'>login</a>" ?> <?php if($li) echo "<a class='logout' href='logout.php'>logout</a>" ?> </span>
-	</div>
+<?php require 'includes/topnav.php'; ?>
+
 
 
 	<div class="container">

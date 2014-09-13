@@ -8,6 +8,54 @@
             parent::__construct('users', array('nid', 'username', 'password', 'level', 'ip', 'cdate'), $id);
         }
 
+        public function checkUserId($user_id) {
+            $db = Database::getDatabase();
+
+            if (!is_numeric($user_id)){
+                echo json_encode('stop that!');
+            }
+            else {
+                $user_result = $db->query("SELECT 1 FROM users WHERE userid = {$user_id}");
+                $user_exists = $db->getValue($user_result);
+                
+                if($user_exists) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        public function getScheduleQuery($user_id) {
+            if(!checkUserId($user_id)){
+                return false;
+            }
+            else {
+                $query = <<<EOQ
+                SELECT 
+                    s.artistid, 
+                    i.band, 
+                    i.genre,
+                    i.spotify_web,
+                    i.spotify_uri,
+                    t.location,
+                    t.starttime,
+                    t.endtime
+                FROM
+                    fest_user_schedule AS s
+                    JOIN fest_info_working_1 AS i
+                        ON i.id = s.artistid
+                    JOIN fest_times AS t
+                        ON t.fest_info_band_id = s.artistid
+                WHERE
+                    s.userid = {$user_id}
+                ORDER BY t.starttime
+EOQ;
+                return $query;
+            }
+        }
+
     }
 
     class festInfo extends DBObject
@@ -42,6 +90,11 @@
             $genre_dropdown .= '</select>';
             return $genre_dropdown;
         }
+
+        
+
+
+
 
     }
 

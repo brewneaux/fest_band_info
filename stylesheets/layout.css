@@ -26,6 +26,16 @@
     text-align: right;
 }
 
+.daySelect {
+    margin-top: 1em;
+    font-size: 1em;
+    text-align: right;
+}
+
+.daySelect a{
+    margin-left:2em;
+}
+
 .band {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     width:100%;
@@ -611,6 +621,14 @@
     }
 }
 
+.topBarNav {
+    font-size: .85em;
+}
+
+.topBarNav a {
+    margin-left: 2em;
+}
+
 /*conflict*/
 #conflict_popup {
     margin: 1em;
@@ -652,6 +670,21 @@
     margin: 0 auto;
 }
 
+.schedulerow {
+    margin: 0 auto;
+    margin-bottom: 0.5em !important;
+}
+.scheduleband {
+    font-size: 1.25em;
+}
+.scheduletime {
+    font-size: .85em;
+    text-align: right;
+}
+.schedulelocation {
+    font-size: .85em;
+}
+
 /* Login Pages
 ================================================== */
 
@@ -681,6 +714,10 @@
         .festHeader {
             margin-top: 3em;
             font-size: 1.25em;
+        }
+
+        .scheduletime {
+            text-align: left;
         }
 
         .login, .logout {
